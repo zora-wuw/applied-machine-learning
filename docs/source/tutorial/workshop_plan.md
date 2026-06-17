@@ -169,6 +169,128 @@ Participants will be able to:
 
 ## Block 4 — Build, train & test (45 min)
 
+| Architecture | Strength | Limitation |
+|--------------|----------|------------|
+| MLP | Simple, fast on tabular data | Ignores spatial/temporal structure |
+| CNN | Strong on images and grids | Needs more data than linear models |
+| RNN/LSTM | Captures temporal dependencies | Harder to train on long sequences |
+| GNN | Models irregular relationships | Requires careful graph construction |
+| U-Net | Precise pixel-level outputs | Needs detailed mask annotations |
+
+### 6.3 RNN / LSTM — Recurrent networks
+
+```{figure} https://upload.wikimedia.org/wikipedia/commons/b/b5/Recurrent_neural_network_unfold.svg
+:alt: RNN unrolled over time
+:width: 560px
+:align: center
+
+RNN folded (left) and unrolled across time steps (right). Source: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Recurrent_neural_network_unfold.svg).
+```
+
+```{figure} https://upload.wikimedia.org/wikipedia/commons/5/56/LSTM_cell.svg
+:alt: LSTM cell
+:width: 380px
+:align: center
+
+LSTM cell with gates controlling information flow. Source: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:LSTM_cell.svg).
+```
+
+**Data flow (RNN):** at each time step $t$: $(x_t, h_{t-1}) \rightarrow h_t \rightarrow y_t$
+
+
+| Component                  | Data in → Data out                                             |
+| -------------------------- | -------------------------------------------------------------- |
+| **Input $x_t$**            | Measurement at time $t$ (e.g. sensor reading, word token)      |
+| **Hidden state $h_{t-1}$** | Summary of all prior steps — passed forward in time            |
+| **Recurrent cell**         | Combines $x_t$ and $h_{t-1}$ with *shared* weights → new $h_t$ |
+| **Output $y_t$**           | Prediction at step $t$ (next value, class label, etc.)         |
+
+
+The diagram shows the network **unrolled**: the same cell is reused at every step (left: folded; right: unfolded across time).
+
+**LSTM** adds a **cell state** and **gates** (forget, input, output) that control what information is kept or discarded — better for long sequences where plain RNNs lose context.
+
+**Data input examples**
+
+
+|                | Shape / format         | Example                                                                                           |
+| -------------- | ---------------------- | ------------------------------------------------------------------------------------------------- |
+| **Usual**      | `(seq_len, 1)`         | Univariate time series: daily website traffic → predict next day                                  |
+| **Usual**      | `(seq_len, embed_dim)` | Text: token sequence embedded with word vectors                                                   |
+| **Scientific** | `(seq_len, n_vars)`    | Weather station: hourly `[temp, humidity, wind_speed, pressure]` over a week → forecast next 24 h |
+| **Scientific** | `(seq_len, 4)`         | DNA / protein: one-hot or learned embeddings per base or amino acid along a sequence              |
+
+
+### 6.4 GNN — Graph Neural Network
+
+```{figure} https://upload.wikimedia.org/wikipedia/commons/e/ec/Message_Passing_Neural_Network.png
+:alt: GNN message passing
+:width: 500px
+:align: center
+
+Message passing between graph nodes. Source: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Message_Passing_Neural_Network.png).
+```
+
+**Data flow:** node features + edge connections → **message passing** → updated node embeddings → graph-level or node-level prediction
+
+
+| Step            | Data in → Data out                                                                                 |
+| --------------- | -------------------------------------------------------------------------------------------------- |
+| **Graph input** | Nodes (atoms, mesh points) with feature vectors; edges (bonds, adjacency) define who talks to whom |
+| **Message**     | Each node gathers information from its neighbors along edges                                       |
+| **Aggregate**   | Neighbor messages are combined (sum, mean, max)                                                    |
+| **Update**      | Node embedding is refreshed using its old state + aggregated messages                              |
+| **Readout**     | Pool all node embeddings for a graph-level prediction, or predict per-node labels                  |
+
+
+Unlike CNNs (regular grids) or MLPs (fixed vectors), GNNs handle **irregular structure** — molecules, citation networks, finite-element meshes.
+
+**Data input examples**
+
+
+|                | Structure     | Example                                                                                                           |
+| -------------- | ------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Usual**      | Nodes + edges | Recommendation graph: users and items linked by clicks                                                            |
+| **Scientific** | Nodes + edges | **Molecule:** C, O, N atoms as nodes; single/double bonds as edges → predict solubility or reactivity             |
+| **Scientific** | Nodes + edges | **Simulation mesh:** mesh vertices as nodes, adjacency from elements → predict stress or temperature at each node |
+
+
+### 6.5 U-Net — Encoder–decoder for segmentation
+
+```{figure} https://lmb.informatik.uni-freiburg.de/people/ronneber/u-net/u-net-architecture.png
+:alt: U-Net architecture
+:width: 520px
+:align: center
+
+U-Net encoder–decoder with skip connections. Source: [U-Net paper (Ronneberger et al., 2015)](https://lmb.informatik.uni-freiburg.de/people/ronneber/u-net/).
+```
+
+**Data flow:** image → **encoder** (contract) → **bottleneck** → **decoder** (expand) → per-pixel mask
+
+
+| Path                 | Data in → Data out                                                                                                               |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Encoder (left)**   | Repeated Conv + MaxPool: spatial size shrinks, channel depth grows (captures context)                                            |
+| **Bottleneck**       | Smallest spatial map with richest semantic features                                                                              |
+| **Decoder (right)**  | Upsampling (transposed conv) restores spatial resolution                                                                         |
+| **Skip connections** | High-resolution encoder features are **concatenated** into the decoder — preserves fine boundaries (cell edges, lesion outlines) |
+| **Output**           | One label per pixel (segmentation mask)                                                                                          |
+
+
+Same conv layers as a CNN, but the U-shape and skip connections target **pixel-wise** output rather than a single class label.
+
+**Data input examples**
+
+
+|                | Input → output                            | Example                                                                               |
+| -------------- | ----------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Usual**      | `(3, H, W)` image → `(H, W)` class mask   | Autonomous driving: label each pixel as road, car, pedestrian                         |
+| **Scientific** | `(1, H, W)` grayscale → `(H, W)` mask     | Microscopy: segment individual cells in a brightfield image                           |
+| **Scientific** | `(C, H, W)` multispectral → `(H, W)` mask | Remote sensing: land-cover class per pixel from many spectral bands                   |
+| **Scientific** | `(C, H, W)` field stack → `(H, W)` mask   | Climate / weather: delineate storm regions or ice extent from stacked variable fields |
+
+
+
 **Notebook:** cells **13–17** — **core of the workshop**
 
 ### Run

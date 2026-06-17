@@ -2,28 +2,30 @@
 
 **Duration:** ~40 minutes
 
-This tutorial builds conceptual foundations before the hands-on [`workshop.ipynb`](workshop.ipynb) session. You will learn *why* ML is used in science, *how* a standard ML project is structured, and *what* happens inside a neural network — using **linear regression** as the simplest training example.
+This tutorial builds conceptual foundations before the hands-on `[workshop.ipynb](workshop.ipynb)` session. You will learn *why* ML is used in science, *how* a standard ML project is structured, and *what* happens inside a neural network — using **linear regression** as the simplest training example.
 
 ### Learning path
 
-| Part | Topic | You will understand… |
-|------|-------|----------------------|
-| 1 | ML in science | Why researchers adopt ML and hybrid methods |
-| 2 | Types of ML | Supervised vs unsupervised vs reinforcement learning |
-| 3 | ML cycle | The end-to-end workflow every project follows |
-| 4 | Problem framing | How to define goals and success metrics |
-| 5–6 | Neural networks | Core components and common architectures |
-| 7–12 | Linear regression | Model → loss → optimization → full training loop |
+
+| Part | Topic             | You will understand…                                 |
+| ---- | ----------------- | ---------------------------------------------------- |
+| 1    | ML in science     | Why researchers adopt ML and hybrid methods          |
+| 2    | Types of ML       | Supervised vs unsupervised vs reinforcement learning |
+| 3    | ML cycle          | The end-to-end workflow every project follows        |
+| 4    | Problem framing   | How to define goals and success metrics              |
+| 5–6  | Neural networks   | Core components and common architectures             |
+| 7–12 | Linear regression | Model → loss → optimization → full training loop     |
+
 
 ```{admonition} Next step
 :class: tip
 
-After this tutorial, run [`workshop.ipynb`](workshop.ipynb) to apply the same workflow to a CNN on chest X-rays.
+After this tutorial, run `[workshop.ipynb](workshop.ipynb)` to apply the same workflow to a CNN on chest X-rays.
 ```
 
 ---
 
-## Part 1 — Why machine learning in science?
+## Part 1 — Machine learning in science
 
 Traditional scientific modeling often relies on physics-based numerical simulations. These models are principled and interpretable, but they can be **slow to run** and **difficult to calibrate** across complex, multi-scale systems.
 
@@ -31,11 +33,13 @@ Machine learning offers a complementary approach: learn patterns directly from d
 
 Pure ML is not the only option. Hybrid approaches combine data-driven learning with domain knowledge:
 
-| Methodology | Purpose | Scientific benefit |
-|-------------|---------|-------------------|
-| **Physics-Informed Neural Networks (PINNs)** | Embed physical laws (e.g., thermodynamics, mass balance) in the loss function | Prevents physically impossible predictions |
-| **Differentiable simulation** | Combine ML gradients with numerical simulators | Accelerates simulation by orders of magnitude |
-| **Surrogate modeling** | Train lightweight models to approximate expensive simulations | Enables millions of real-time scenario trials |
+
+| Methodology                                  | Purpose                                                                       | Scientific benefit                            |
+| -------------------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------- |
+| **Physics-Informed Neural Networks (PINNs)** | Embed physical laws (e.g., thermodynamics, mass balance) in the loss function | Prevents physically impossible predictions    |
+| **Differentiable simulation**                | Combine ML gradients with numerical simulators                                | Accelerates simulation by orders of magnitude |
+| **Surrogate modeling**                       | Train lightweight models to approximate expensive simulations                 | Enables millions of real-time scenario trials |
+
 
 **Where ML adds value in science:**
 
@@ -58,11 +62,13 @@ ML does not replace scientific reasoning — it extends what we can compute and 
 
 Think of teaching a computer about fruit in a basket:
 
-| Type | Analogy | What the model learns |
-|------|---------|------------------------|
-| **Supervised learning** | Fruit with labels ("apple", "banana") | Map inputs to known outputs from labeled examples |
-| **Unsupervised learning** | Unlabeled mixed fruit | Group similar items without predefined categories |
-| **Reinforcement learning** | Puppy rewarded for fetching apples | Optimal actions through trial, error, and rewards |
+
+| Type                       | Analogy                               | What the model learns                             |
+| -------------------------- | ------------------------------------- | ------------------------------------------------- |
+| **Supervised learning**    | Fruit with labels ("apple", "banana") | Map inputs to known outputs from labeled examples |
+| **Unsupervised learning**  | Unlabeled mixed fruit                 | Group similar items without predefined categories |
+| **Reinforcement learning** | Puppy rewarded for fetching apples    | Optimal actions through trial, error, and rewards |
+
 
 **This course focuses on supervised learning** — the most common starting point in applied science (e.g., predict house price from size, classify an X-ray as pneumonia or normal).
 
@@ -77,15 +83,17 @@ Two supervised task types you will encounter:
 
 Every ML project follows a repeating workflow. Memorize these steps — they reappear in every notebook in this course.
 
-| Step | What you do | Example (pneumonia workshop) |
-|------|-------------|------------------------------|
+
+| Step                  | What you do                                             | Example (pneumonia workshop)                              |
+| --------------------- | ------------------------------------------------------- | --------------------------------------------------------- |
 | 1. **Define problem** | State the real-world goal and a measurable proxy metric | Goal: detect pneumonia; metric: recall on pneumonia class |
-| 2. **Prepare data** | Load, clean, explore, split, preprocess | Load X-rays; normalize pixels; train/val/test split |
-| 3. **Choose model** | Match architecture to data type; start simple | CNN for images; linear regression for tabular baseline |
-| 4. **Train** | Minimize loss by updating model weights | Forward → loss → backward → optimizer step |
-| 5. **Validate** | Monitor performance on held-out validation data | Track val accuracy each epoch; tune learning rate |
-| 6. **Test & report** | Evaluate once on test set; report metrics and failures | Confusion matrix; inspect misclassified X-rays |
-| 7. **Iterate** | Loop back if performance or requirements change | Add augmentation, change architecture, collect more data |
+| 2. **Prepare data**   | Load, clean, explore, split, preprocess                 | Load X-rays; normalize pixels; train/val/test split       |
+| 3. **Choose model**   | Match architecture to data type; start simple           | CNN for images; linear regression for tabular baseline    |
+| 4. **Train**          | Minimize loss by updating model weights                 | Forward → loss → backward → optimizer step                |
+| 5. **Validate**       | Monitor performance on held-out validation data         | Track val accuracy each epoch; tune learning rate         |
+| 6. **Test & report**  | Evaluate once on test set; report metrics and failures  | Confusion matrix; inspect misclassified X-rays            |
+| 7. **Iterate**        | Loop back if performance or requirements change         | Add augmentation, change architecture, collect more data  |
+
 
 ```{mermaid}
 flowchart LR
@@ -116,14 +124,12 @@ For a climate prediction project, what would be a real-world goal and a proxy me
 Before writing any code, clarify three things:
 
 1. **Real-world goal** — What decision or outcome does the model support?
-   - *Example:* Help clinicians flag pneumonia cases earlier from chest X-rays.
-
+  - *Example:* Help clinicians flag pneumonia cases earlier from chest X-rays.
 2. **Proxy metric** — What can you measure in data that stays close to the real goal?
-   - *Example:* Recall for the pneumonia class (minimize missed cases).
-
+  - *Example:* Recall for the pneumonia class (minimize missed cases).
 3. **Baseline and cost** — What is the simplest approach, and is added complexity justified?
-   - Start with a linear model or simple heuristic before a deep network.
-   - Consider data collection cost, training time, and maintenance.
+  - Start with a linear model or simple heuristic before a deep network.
+  - Consider data collection cost, training time, and maintenance.
 
 **Best practices:**
 
@@ -149,20 +155,22 @@ A simple feedforward neural network.
 
 ### Building blocks
 
-| Concept | What it means | Science example |
-|---------|---------------|-----------------|
-| **Input layer** | Raw features fed to the network | Temperature, pressure, pixel values |
-| **Hidden layers** | Intermediate representations learned from data | Edges → textures → structures in an X-ray |
-| **Output layer** | Final prediction | House price, pneumonia probability |
-| **Fully connected layer** | Every input connects to every output | Tabular regression on experiment measurements |
-| **Activation function** | Nonlinearity enabling complex patterns | ReLU, sigmoid |
-| **Loss function** | Error measure to minimize | MSE (regression); BCE / cross-entropy (classification) |
-| **Forward pass** | Input flows through layers → prediction | Model scores an X-ray for pneumonia |
-| **Backward pass** | Gradients computed to update weights | `loss.backward()` in PyTorch |
-| **Optimizer** | Rule for weight updates | SGD, Adam, RMSprop |
-| **Learning rate** | Step size per update | Too large → unstable; too small → slow |
-| **Batch / epoch** | Subset per update / one full pass through training data | 32 images per batch, 12 epochs |
-| **Regularization** | Reduce overfitting | Dropout, batch norm, data augmentation |
+
+| Concept                   | What it means                                           | Science example                                        |
+| ------------------------- | ------------------------------------------------------- | ------------------------------------------------------ |
+| **Input layer**           | Raw features fed to the network                         | Temperature, pressure, pixel values                    |
+| **Hidden layers**         | Intermediate representations learned from data          | Edges → textures → structures in an X-ray              |
+| **Output layer**          | Final prediction                                        | House price, pneumonia probability                     |
+| **Fully connected layer** | Every input connects to every output                    | Tabular regression on experiment measurements          |
+| **Activation function**   | Nonlinearity enabling complex patterns                  | ReLU, sigmoid                                          |
+| **Loss function**         | Error measure to minimize                               | MSE (regression); BCE / cross-entropy (classification) |
+| **Forward pass**          | Input flows through layers → prediction                 | Model scores an X-ray for pneumonia                    |
+| **Backward pass**         | Gradients computed to update weights                    | `loss.backward()` in PyTorch                           |
+| **Optimizer**             | Rule for weight updates                                 | SGD, Adam, RMSprop                                     |
+| **Learning rate**         | Step size per update                                    | Too large → unstable; too small → slow                 |
+| **Batch / epoch**         | Subset per update / one full pass through training data | 32 images per batch, 12 epochs                         |
+| **Regularization**        | Reduce overfitting                                      | Dropout, batch norm, data augmentation                 |
+
 
 ### PyTorch workflow (preview)
 
@@ -175,26 +183,30 @@ A simple feedforward neural network.
 
 ## Part 6 — Five common architectures in domain science
 
-| Architecture | Best for | Science use cases |
-|--------------|----------|-------------------|
-| **MLP** | Tabular / vector data | Surrogate models; material property prediction |
-| **CNN** | Images and spatial grids | X-rays ([`workshop.ipynb`](workshop.ipynb)); microscopy; climate fields |
-| **RNN / LSTM** | Sequences and time series | Sensor logs; weather records; genomic sequences |
-| **GNN** | Graph-structured data | Molecules; materials; simulation meshes |
-| **U-Net** | Image segmentation | Cell boundaries; tumor regions in microscopy |
+
+| Architecture   | Best for                  | Science use cases                                                       |
+| -------------- | ------------------------- | ----------------------------------------------------------------------- |
+| **MLP**        | Tabular / vector data     | Surrogate models; material property prediction                          |
+| **CNN**        | Images and spatial grids  | X-rays (`[workshop.ipynb](workshop.ipynb)`); microscopy; climate fields |
+| **RNN / LSTM** | Sequences and time series | Sensor logs; weather records; genomic sequences                         |
+| **GNN**        | Graph-structured data     | Molecules; materials; simulation meshes                                 |
+| **U-Net**      | Image segmentation        | Cell boundaries; tumor regions in microscopy                            |
+
 
 ### Input shapes: usual data vs scientific data
 
 CNNs are not limited to 3-channel RGB photos. In science, **channels often represent physical variables** stacked over the same spatial grid — the conv layers still scan locally, but each "pixel" carries many measurements.
 
-| Architecture | Usual input example | Scientific input example |
-|--------------|---------------------|--------------------------|
-| **MLP** | Customer record: `[age, income, spend, …]` → vector shape `(n_features,)` | Experiment row: `[temperature, pressure, alloy %, …]` → predict yield strength |
-| **CNN** | RGB photo: `(3, 224, 224)` — 3 colour channels | Grayscale X-ray: `(1, 150, 150)` — 1 channel ([`workshop.ipynb`](workshop.ipynb)) |
-| **CNN** | — | Weather / climate **field stack**: `(C, H, W)` with **hundreds or thousands of channels** — e.g. temperature, humidity, pressure, wind $(u, v)$ at multiple heights and forecast lead times on a lat–lon grid |
-| **RNN / LSTM** | Daily stock price sequence: `(time_steps, 1)` | Hourly sensor log: `(time_steps, n_sensors)` — temperature, wind, rainfall at a station |
-| **GNN** | Social network: users = nodes, friendships = edges | Molecule: atoms = nodes (element, charge), bonds = edges; or FEM mesh nodes and elements |
-| **U-Net** | RGB street image `(3, H, W)` → per-pixel class mask | Multispectral satellite tile or microscopy stack → per-pixel cell-type or land-cover mask |
+
+| Architecture   | Usual input example                                                       | Scientific input example                                                                                                                                                                                      |
+| -------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **MLP**        | Customer record: `[age, income, spend, …]` → vector shape `(n_features,)` | Experiment row: `[temperature, pressure, alloy %, …]` → predict yield strength                                                                                                                                |
+| **CNN**        | RGB photo: `(3, 224, 224)` — 3 colour channels                            | Grayscale X-ray: `(1, 150, 150)` — 1 channel (`[workshop.ipynb](workshop.ipynb)`)                                                                                                                             |
+| **CNN**        | —                                                                         | Weather / climate **field stack**: `(C, H, W)` with **hundreds or thousands of channels** — e.g. temperature, humidity, pressure, wind $(u, v)$ at multiple heights and forecast lead times on a lat–lon grid |
+| **RNN / LSTM** | Daily stock price sequence: `(time_steps, 1)`                             | Hourly sensor log: `(time_steps, n_sensors)` — temperature, wind, rainfall at a station                                                                                                                       |
+| **GNN**        | Social network: users = nodes, friendships = edges                        | Molecule: atoms = nodes (element, charge), bonds = edges; or FEM mesh nodes and elements                                                                                                                      |
+| **U-Net**      | RGB street image `(3, H, W)` → per-pixel class mask                       | Multispectral satellite tile or microscopy stack → per-pixel cell-type or land-cover mask                                                                                                                     |
+
 
 **Tensor layout reminder (PyTorch CNN):** `(batch, channels, height, width)`. More channels = more variables at each spatial location, not necessarily more colours.
 
@@ -210,21 +222,25 @@ MLP architecture. Source: [Wikimedia Commons](https://commons.wikimedia.org/wiki
 
 **Data flow:** input vector → **Linear** (weighted sum + bias) → **Activation** (ReLU) → … → output
 
-| Layer | Data in → Data out |
-|-------|-------------------|
-| **Input** | Feature vector (e.g. temperature, pressure, composition) |
-| **Fully connected (`nn.Linear`)** | Each output neuron combines *all* inputs with learned weights |
-| **Activation (ReLU)** | Applies nonlinearity; without it, stacked layers collapse to one linear map |
-| **Output** | Single value (regression) or class scores (classification) |
+
+| Layer                             | Data in → Data out                                                          |
+| --------------------------------- | --------------------------------------------------------------------------- |
+| **Input**                         | Feature vector (e.g. temperature, pressure, composition)                    |
+| **Fully connected (`nn.Linear`)** | Each output neuron combines *all* inputs with learned weights               |
+| **Activation (ReLU)**             | Applies nonlinearity; without it, stacked layers collapse to one linear map |
+| **Output**                        | Single value (regression) or class scores (classification)                  |
+
 
 Every input connects to every neuron in the next layer — good for tabular data, but ignores spatial or sequential structure.
 
 **Data input examples**
 
-| | Shape / format | Example |
-|---|----------------|---------|
-| **Usual** | `(n_features,)` per sample | Credit scoring: `[income, debt_ratio, payment_history_score, …]` |
+
+|                | Shape / format             | Example                                                                                                                              |
+| -------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Usual**      | `(n_features,)` per sample | Credit scoring: `[income, debt_ratio, payment_history_score, …]`                                                                     |
 | **Scientific** | `(n_features,)` per sample | Surrogate model: `[porosity, grain_size, sinter_temp, …]` → predict conductivity; simulation parameters in, stress field summary out |
+
 
 ### 6.2 CNN — Convolutional Neural Network
 
@@ -238,25 +254,29 @@ Typical CNN architecture. Source: [Wikimedia Commons](https://commons.wikimedia.
 
 **Data flow:** image tensor → **Conv** → **ReLU** → **Pool** → … → **Flatten** → **Linear** → prediction
 
-| Layer | Data in → Data out |
-|-------|-------------------|
-| **Conv2d** | A small filter slides across the image; each position produces one value in a **feature map** (local patterns: edges, textures) |
-| **ReLU** | Zeroes negative activations; keeps computation sparse and nonlinear |
-| **MaxPool2d** | Downsamples each region (e.g. 2×2 window → max value); reduces spatial size, builds translation tolerance |
-| **BatchNorm** | Normalizes activations per channel; stabilizes training |
-| **Dropout** | Randomly drops units during training; reduces overfitting |
-| **Flatten + Linear** | Converts 2D feature maps to a vector, then classifies |
 
-Spatial structure is preserved until pooling — why CNNs excel on images and gridded scientific fields. See `PneumoniaCNN` in [`workshop.ipynb`](workshop.ipynb).
+| Layer                | Data in → Data out                                                                                                              |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Conv2d**           | A small filter slides across the image; each position produces one value in a **feature map** (local patterns: edges, textures) |
+| **ReLU**             | Zeroes negative activations; keeps computation sparse and nonlinear                                                             |
+| **MaxPool2d**        | Downsamples each region (e.g. 2×2 window → max value); reduces spatial size, builds translation tolerance                       |
+| **BatchNorm**        | Normalizes activations per channel; stabilizes training                                                                         |
+| **Dropout**          | Randomly drops units during training; reduces overfitting                                                                       |
+| **Flatten + Linear** | Converts 2D feature maps to a vector, then classifies                                                                           |
+
+
+Spatial structure is preserved until pooling — why CNNs excel on images and gridded scientific fields. See `PneumoniaCNN` in `[workshop.ipynb](workshop.ipynb)`.
 
 **Data input examples**
 
-| | Channels × spatial size | Example |
-|---|---------------------------|---------|
-| **Usual** | `3 × 224 × 224` | Natural-image classification (RGB) |
-| **Scientific** | `1 × 150 × 150` | Single-channel chest X-ray (grayscale) |
-| **Scientific** | `C × H × W`, **C ≫ 3** | **Weather / climate CNN:** each channel is a 2D field — surface temperature, specific humidity, geopotential height, zonal/meridional wind at several pressure levels, plus past and future time slices. A single input tensor can have **hundreds to thousands of channels** while still using the same Conv2d → Pool workflow as a photo CNN |
-| **Scientific** | `C × H × W` | Microscopy or satellite **multispectral** stack: bands beyond visible RGB (e.g. NIR, thermal) |
+
+|                | Channels × spatial size | Example                                                                                                                                                                                                                                                                                                                                        |
+| -------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Usual**      | `3 × 224 × 224`         | Natural-image classification (RGB)                                                                                                                                                                                                                                                                                                             |
+| **Scientific** | `1 × 150 × 150`         | Single-channel chest X-ray (grayscale)                                                                                                                                                                                                                                                                                                         |
+| **Scientific** | `C × H × W`, **C ≫ 3**  | **Weather / climate CNN:** each channel is a 2D field — surface temperature, specific humidity, geopotential height, zonal/meridional wind at several pressure levels, plus past and future time slices. A single input tensor can have **hundreds to thousands of channels** while still using the same Conv2d → Pool workflow as a photo CNN |
+| **Scientific** | `C × H × W`             | Microscopy or satellite **multispectral** stack: bands beyond visible RGB (e.g. NIR, thermal)                                                                                                                                                                                                                                                  |
+
 
 The key idea: **channels are generic feature maps**. In vision they are R, G, B; in weather they are physical variables aligned on the same grid.
 
@@ -280,25 +300,9 @@ LSTM cell with gates controlling information flow. Source: [Wikimedia Commons](h
 
 **Data flow (RNN):** at each time step $t$: $(x_t, h_{t-1}) \rightarrow h_t \rightarrow y_t$
 
-| Component | Data in → Data out |
-|-----------|-------------------|
-| **Input $x_t$** | Measurement at time $t$ (e.g. sensor reading, word token) |
-| **Hidden state $h_{t-1}$** | Summary of all prior steps — passed forward in time |
-| **Recurrent cell** | Combines $x_t$ and $h_{t-1}$ with *shared* weights → new $h_t$ |
-| **Output $y_t$** | Prediction at step $t$ (next value, class label, etc.) |
-
 The diagram shows the network **unrolled**: the same cell is reused at every step (left: folded; right: unfolded across time).
 
 **LSTM** adds a **cell state** and **gates** (forget, input, output) that control what information is kept or discarded — better for long sequences where plain RNNs lose context.
-
-**Data input examples**
-
-| | Shape / format | Example |
-|---|----------------|---------|
-| **Usual** | `(seq_len, 1)` | Univariate time series: daily website traffic → predict next day |
-| **Usual** | `(seq_len, embed_dim)` | Text: token sequence embedded with word vectors |
-| **Scientific** | `(seq_len, n_vars)` | Weather station: hourly `[temp, humidity, wind_speed, pressure]` over a week → forecast next 24 h |
-| **Scientific** | `(seq_len, 4)` | DNA / protein: one-hot or learned embeddings per base or amino acid along a sequence |
 
 ### 6.4 GNN — Graph Neural Network
 
@@ -311,24 +315,8 @@ Message passing between graph nodes. Source: [Wikimedia Commons](https://commons
 ```
 
 **Data flow:** node features + edge connections → **message passing** → updated node embeddings → graph-level or node-level prediction
-
-| Step | Data in → Data out |
-|------|-------------------|
-| **Graph input** | Nodes (atoms, mesh points) with feature vectors; edges (bonds, adjacency) define who talks to whom |
-| **Message** | Each node gathers information from its neighbors along edges |
-| **Aggregate** | Neighbor messages are combined (sum, mean, max) |
-| **Update** | Node embedding is refreshed using its old state + aggregated messages |
-| **Readout** | Pool all node embeddings for a graph-level prediction, or predict per-node labels |
-
 Unlike CNNs (regular grids) or MLPs (fixed vectors), GNNs handle **irregular structure** — molecules, citation networks, finite-element meshes.
 
-**Data input examples**
-
-| | Structure | Example |
-|---|-----------|---------|
-| **Usual** | Nodes + edges | Recommendation graph: users and items linked by clicks |
-| **Scientific** | Nodes + edges | **Molecule:** C, O, N atoms as nodes; single/double bonds as edges → predict solubility or reactivity |
-| **Scientific** | Nodes + edges | **Simulation mesh:** mesh vertices as nodes, adjacency from elements → predict stress or temperature at each node |
 
 ### 6.5 U-Net — Encoder–decoder for segmentation
 
@@ -342,25 +330,6 @@ U-Net encoder–decoder with skip connections. Source: [U-Net paper (Ronneberger
 
 **Data flow:** image → **encoder** (contract) → **bottleneck** → **decoder** (expand) → per-pixel mask
 
-| Path | Data in → Data out |
-|------|-------------------|
-| **Encoder (left)** | Repeated Conv + MaxPool: spatial size shrinks, channel depth grows (captures context) |
-| **Bottleneck** | Smallest spatial map with richest semantic features |
-| **Decoder (right)** | Upsampling (transposed conv) restores spatial resolution |
-| **Skip connections** | High-resolution encoder features are **concatenated** into the decoder — preserves fine boundaries (cell edges, lesion outlines) |
-| **Output** | One label per pixel (segmentation mask) |
-
-Same conv layers as a CNN, but the U-shape and skip connections target **pixel-wise** output rather than a single class label.
-
-**Data input examples**
-
-| | Input → output | Example |
-|---|----------------|---------|
-| **Usual** | `(3, H, W)` image → `(H, W)` class mask | Autonomous driving: label each pixel as road, car, pedestrian |
-| **Scientific** | `(1, H, W)` grayscale → `(H, W)` mask | Microscopy: segment individual cells in a brightfield image |
-| **Scientific** | `(C, H, W)` multispectral → `(H, W)` mask | Remote sensing: land-cover class per pixel from many spectral bands |
-| **Scientific** | `(C, H, W)` field stack → `(H, W)` mask | Climate / weather: delineate storm regions or ice extent from stacked variable fields |
-
 ### Decision guide
 
 - Tabular measurements → **MLP**
@@ -368,13 +337,15 @@ Same conv layers as a CNN, but the U-shape and skip connections target **pixel-w
 - Time-ordered data → **RNN / LSTM**
 - Networks of entities → **GNN**
 
-| Architecture | Strength | Limitation |
-|--------------|----------|------------|
-| MLP | Simple, fast on tabular data | Ignores spatial/temporal structure |
-| CNN | Strong on images and grids | Needs more data than linear models |
-| RNN/LSTM | Captures temporal dependencies | Harder to train on long sequences |
-| GNN | Models irregular relationships | Requires careful graph construction |
-| U-Net | Precise pixel-level outputs | Needs detailed mask annotations |
+
+| Architecture | Strength                       | Limitation                          |
+| ------------ | ------------------------------ | ----------------------------------- |
+| MLP          | Simple, fast on tabular data   | Ignores spatial/temporal structure  |
+| CNN          | Strong on images and grids     | Needs more data than linear models  |
+| RNN/LSTM     | Captures temporal dependencies | Harder to train on long sequences   |
+| GNN          | Models irregular relationships | Requires careful graph construction |
+| U-Net        | Precise pixel-level outputs    | Needs detailed mask annotations     |
+
 
 Hybrid methods from Part 1 map here: **PINNs** add physics constraints; **surrogate models** often use **MLPs**; the workshop uses a **CNN** because X-rays are spatial data.
 
@@ -386,12 +357,14 @@ We now walk through the **training cycle** using the simplest supervised model: 
 
 This example (adapted from Bethany Lusch, ALCF) connects every concept from Part 5 to runnable PyTorch code:
 
-| ML cycle step | Linear regression |
-|---------------|-------------------|
-| Problem | Predict `SalePrice` from `GrLivArea` |
-| Model | $\hat{y} = m x + b$ — weight $m$ and bias $b$ |
-| Loss | Mean squared error between prediction and true price |
-| Train | Adjust $m$, $b$ to minimize loss (SGD) |
+
+| ML cycle step | Linear regression                                    |
+| ------------- | ---------------------------------------------------- |
+| Problem       | Predict `SalePrice` from `GrLivArea`                 |
+| Model         | $\hat{y} = m x + b$ — weight $m$ and bias $b$        |
+| Loss          | Mean squared error between prediction and true price |
+| Train         | Adjust $m$, $b$ to minimize loss (SGD)               |
+
 
 ```{figure} ../figs/linear_regression_output.png
 :alt: House price vs living area
@@ -478,11 +451,11 @@ To reduce loss, we compute how it changes with respect to each parameter (the **
 For our linear model:
 
 $$
-\frac{\partial L}{\partial m} = -2 \, x_i (y_i - \hat{y}_i)
+\frac{\partial L}{\partial m} = -2  x_i (y_i - \hat{y}_i)
 $$
 
 $$
-\frac{\partial L}{\partial b} = -2 \, (y_i - \hat{y}_i)
+\frac{\partial L}{\partial b} = -2  (y_i - \hat{y}_i)
 $$
 
 Parameters update as:
@@ -504,11 +477,13 @@ optimizer.step()      # update weights
 
 **Learning rate matters:**
 
-| Learning rate | Behavior |
-|---------------|----------|
-| Too large | Oscillates around the minimum, may diverge |
-| Too small | Progress is very slow, may stall |
-| Well tuned | Steady convergence toward a good solution |
+
+| Learning rate | Behavior                                   |
+| ------------- | ------------------------------------------ |
+| Too large     | Oscillates around the minimum, may diverge |
+| Too small     | Progress is very slow, may stall           |
+| Well tuned    | Steady convergence toward a good solution  |
+
 
 ```{figure} https://raw.githubusercontent.com/zora-wuw/ai-science-training-series/eb9a410dbe14466bbcaeba756f30aff1460ae81e/01_intro_AI_on_Supercomputer/figures/parabola_largeLR.png
 :alt: Large learning rate
@@ -612,14 +587,16 @@ Plot `loss_history` to verify the model is learning — loss should trend downwa
 Training loss should decrease over epochs.
 ```
 
-**This is the same loop as in [`workshop.ipynb`](workshop.ipynb):**
+**This is the same loop as in `[workshop.ipynb](workshop.ipynb)`:**
 
-| Step | Linear regression | Pneumonia CNN |
-|------|-------------------|---------------|
-| Model | `nn.Linear` | `PneumoniaCNN` (Conv2d, Dropout, …) |
-| Loss | `MSELoss` | `BCEWithLogitsLoss` |
-| Optimizer | `SGD` | `RMSprop` |
-| Data | Tabular features | Image batches via `DataLoader` |
+
+| Step      | Linear regression | Pneumonia CNN                       |
+| --------- | ----------------- | ----------------------------------- |
+| Model     | `nn.Linear`       | `PneumoniaCNN` (Conv2d, Dropout, …) |
+| Loss      | `MSELoss`         | `BCEWithLogitsLoss`                 |
+| Optimizer | `SGD`             | `RMSprop`                           |
+| Data      | Tabular features  | Image batches via `DataLoader`      |
+
 
 ---
 
@@ -633,3 +610,4 @@ Training loss should decrease over epochs.
 4. **Neural network building blocks** — layers, loss, forward/backward pass, optimizer
 5. **Architectures** — MLP, CNN, RNN/LSTM, GNN, U-Net and when to use each
 6. **Training in practice** — linear regression as the simplest end-to-end example
+
