@@ -130,8 +130,10 @@ Where TP=True Positives, TN=True Negatives, FP=False Positives, FN=False Negativ
 
 Use precision and recall when class imbalance matters, or missing certain outcomes is riskier than others.
 
+> **Checkpoint:** Be careful if the dataset is imbalanced   
 
 ---
+
 ## Part 5 — Neural network concepts
 
 A **neural network** is a stack of **neurons** organized in **layers**. Each neuron applies weights and a bias, then an **activation function**. Training adjusts the weights to minimize a **loss function**.
