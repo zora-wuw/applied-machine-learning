@@ -136,9 +136,22 @@ Use precision and recall when class imbalance matters, or missing certain outcom
 
 A **neural network** is a stack of **neurons** organized in **layers**. Each neuron applies weights and a bias, then an **activation function**. Training adjusts the weights to minimize a **loss function**.
 
-Linear regression is the simplest case: one weighted sum plus bias. Deep networks stack many such operations with nonlinear **activation functions**.
+Linear regression is the simplest case: one weighted sum plus bias. Deep networks stack many such operations with nonlinear **activation functions**.  
+<p align="center">
+   <img src="../figs/neural_nets.png" alt="Neural Networks" width="50%"/>
+</p>  
 
-*A simple feedforward neural network.[Neural Nets](../figs/neural_nets.png)*
+**Activation Function**  
+<p align="center">
+   <img src="../figs/activation_func.png" alt="activation function" width="50%"/>
+</p>  
+
+**Dropout**  
+
+  <p align="center">
+   <img src="https://towardsdatascience.com/wp-content/uploads/2022/07/1wDGvx0z0-nEB8zQHykvwPw.png" alt="dropout" width="50%"/>
+ </p>  
+
 
 ### Building blocks
 
@@ -159,7 +172,6 @@ Linear regression is the simplest case: one weighted sum plus bias. Deep network
 | **Regularization**        | Reduce overfitting                                      | Dropout, batch norm, data augmentation                 |
 
 
-*activation functions.[activation functions](../figs/activation_func.png)*
 
 
 ### PyTorch workflow
@@ -323,6 +335,7 @@ Unlike CNNs (regular grids) or MLPs (fixed vectors), GNNs handle **irregular str
 
 
 Hybrid methods from Part 1 map here: **PINNs** add physics constraints; **surrogate models** often use **MLPs**; the workshop uses a **CNN**.  
+
 ---
 
 ## Part 7 — Training: linear regression
@@ -559,7 +572,14 @@ Plot `loss_history` to verify the model is learning — loss should trend downwa
 
 *Training loss should decrease over epochs.*
 
-**This is the same loop as in [workshop.ipynb](workshop.ipynb):**
+**Model Fitting Issues**  
+<p align="center">
+  <img src="https://raw.githubusercontent.com/zora-wuw/ai-science-training-series/eb9a410dbe14466bbcaeba756f30aff1460ae81e/02_intro_neural_networks/images/bias_vs_variance.png" alt="model_fitting" width="50%"/>
+</p>  
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/zora-wuw/ai-science-training-series/eb9a410dbe14466bbcaeba756f30aff1460ae81e/02_intro_neural_networks/images/acc_under_over.webp" alt="possible symptems" width="50%"/>
+</p>
 
 
 | Step      | Linear regression | Pneumonia CNN                       |
